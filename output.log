@@ -1,2 +1,9 @@
-2024-08-18 08:36:34,842 - INFO - hadith.py - line:26 - Start in DEV mode
-2024-08-18 08:36:34,842 - INFO - base.py - line:166 - Scheduler started
+2024-08-19 22:15:06,583 - INFO - hadith.py - line:34 - Start in DEV mode
+2024-08-19 22:15:06,583 - INFO - base.py - line:166 - Scheduler started
+2024-08-19 22:15:15,177 - INFO - hadith.py - line:98 - kjhsdf
+2024-08-19 22:15:16,034 - ERROR - hadith.py - line:127 - === Error ===
+2024-08-19 22:15:16,035 - ERROR - hadith.py - line:128 - 'popitem(): dictionary is empty'
+2024-08-19 22:15:18,679 - INFO - hadith.py - line:98 - 123123123
+2024-08-19 22:15:19,510 - ERROR - hadith.py - line:127 - === Error ===
+2024-08-19 22:15:19,510 - ERROR - hadith.py - line:128 - 'popitem(): dictionary is empty'
+2024-08-19 22:15:29,111 - INFO - hadith.py - line:98 - إنما الأعمال بالنيات

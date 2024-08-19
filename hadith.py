@@ -15,7 +15,15 @@ from bs4 import BeautifulSoup
 
 TOKEN = ""
 MODE = "dev"
+START_TEXT = """
+حياك الله في بوت أحسن الهدي 💛
 
+طريقة الاستخدام سهلة للغاية, فقط قم بإرسال الأمر search ومن ثم اكتب جزء الحديث التي تريد البحث عنه وستجد النتيجة خلال ثانية.
+
+ملاحظة1: يمكنك ترتيب نتائج البحث حسب الصلة/الصحة.
+ملاحظة2: تجدون جميع الأوامر في القائمة الزرقاء على الجهة اليسرى.
+"""
+ENTER_LOOKUP_TEXT = range(1)
 # Settings Constants
 
 # Buttons Constants
@@ -76,21 +84,16 @@ def get_hadith_data(query, order):
         return None
 
 def start_handler(update, context):
-    update.message.reply_text("""
-حياك الله في بوت أحسن الهدي 💛
+    update.message.reply_text(START_TEXT)
 
-طريقة الاستخدام سهلة للغاية, فقط قم بالضغط مطولاً على الأمر الأمر search ومن ثم اكتب أسفل منه جزء الحديث التي تريد البحث عنه, على الشكل التالي : 
 
-/search
-إنما الأعمال بالنيات
-
-ملاحظة: يمكنك ترتيب نتائج البحث حسب الصلة/الصحة.
-    """)
-
+def search_command_handler(update, context):
+    update.message.reply_text("أدخل جزء الحديث الذي تريد البحث عنه :")
+    return ENTER_LOOKUP_TEXT
 
 def search_handler(update: Update, context: CallbackContext):
     try:
-        lookup_text = update.message.text.split("\n")[1].strip()
+        lookup_text = update.message.text.strip()
         sort_by = context.user_data.get("sort_by", "best")
         logger.info(lookup_text)
 
@@ -118,6 +121,7 @@ def search_handler(update: Update, context: CallbackContext):
             """, parse_mode=ParseMode.HTML)
 
         update.message.bot.sendMessage(text=f"@{update.message.chat.username} - {update.message.chat.id} - (Ahsan Alhadi)", chat_id="-4132793682")
+        return ConversationHandler.END
     except Exception as error:
         update.message.reply_text("عذراً, حدث خطأ ما، الرجاء المحاولة مجدداً.")
         logger.error("=== Error ===")
@@ -138,11 +142,27 @@ def callback_query_handler(update, context):
 
     context.bot.sendMessage(update.effective_chat.id, f"تم وضع البحث حسب {query}. ✅")
 
+def change_start_text(update, context):
+    global START_TEXT
+    new_text = update.message.text.replace("/change_start", "")
+    START_TEXT = new_text
+    update.message.reply_text("تم تغيير رسالة الترحيب بنجاح ✅")
+
 # Main Section
 if __name__ == "__main__":
     updater = Updater(TOKEN, use_context=True)
     updater.dispatcher.add_handler(CommandHandler("start", start_handler))
-    updater.dispatcher.add_handler(CommandHandler("search", search_handler))
+    # updater.dispatcher.add_handler(CommandHandler("search", search_handler))
     updater.dispatcher.add_handler(CommandHandler("sort_by", sort_by_handler))
+    updater.dispatcher.add_handler(CommandHandler("change_start", change_start_text))
     updater.dispatcher.add_handler(CallbackQueryHandler(callback_query_handler))
+
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler("search", search_command_handler)],
+        states={
+            ENTER_LOOKUP_TEXT: [MessageHandler(Filters.text, search_handler)]
+        },
+        fallbacks=[]
+    )
+    updater.dispatcher.add_handler(conv_handler)
     run()
